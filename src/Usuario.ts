@@ -1,6 +1,18 @@
-import Tarefa, { DificuldadeTarefa, StatusTarefa} from "./Tarefa";
+import Tarefa from "./Tarefa";
+
+import { DificuldadeTarefa } from './enum/EnumDificuldadeTarefa'
+import { StatusTarefa } from "./enum/EnumStatusTarefa";
 
 export default class Usuario {
+
+    static #contadorId = 1000
+
+    #idUsuario: number
+    get idUsuario() {
+        return this.#idUsuario
+    }
+
+
     #nomeUsuario: string;
     get nomeUsuario() {
         return this.#nomeUsuario
@@ -17,22 +29,20 @@ export default class Usuario {
     get profissaoUsuario() {
         return this.#profissaoUsuario
     }
-    set mudarProfissaoUsuario(novaProfissão: string){
+    set mudarProfissaoUsuario(novaProfissão: string) {
         this.#profissaoUsuario = novaProfissão
     }
 
-    #tarefasUsuario: Tarefa[] = [new Tarefa(
-        "Funcionalidades das contagens",
-        "Criar os eventos que vão ser disparados quando o usuario clicar no conteiner da contagem.",
-        StatusTarefa.EmProgresso,
-        DificuldadeTarefa.Medio
-    )]
-    get tarefasUsuario () {
+    #tarefasUsuario: Tarefa[] = []
+    get tarefasUsuario() {
         return this.#tarefasUsuario
     }
 
 
     constructor(nome: string, email: string, senha: string, profissao?: string) {
+        Usuario.#contadorId++
+
+        this.#idUsuario = Usuario.#contadorId
         this.#nomeUsuario = nome.toLowerCase();
         this.#emailUsuario = email.toLowerCase();
         this.#senhaUsuario = senha;
@@ -40,15 +50,28 @@ export default class Usuario {
     };
 
     compararSenha(senhaComparacao: string): Boolean {
-        if (this.#senhaUsuario === senhaComparacao) { return true } else { return false }
+        if (this.#senhaUsuario === senhaComparacao) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    compararId(idComparacao: number): boolean {
+        if (this.#idUsuario === idComparacao) {
+            return true
+        } else {
+            return false
+        }
     }
 
 
-    toJSON(){
+    toJSON() {
         return {
+            id: this.#idUsuario,
             nome: this.#nomeUsuario,
             email: this.#emailUsuario,
-            profissao: this.profissaoUsuario != undefined? this.#profissaoUsuario : "Sem profissão registrada" ,
+            profissao: this.profissaoUsuario != undefined ? this.#profissaoUsuario : "Sem profissão registrada",
             tarefas: this.tarefasUsuario
         }
     }

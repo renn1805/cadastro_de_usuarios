@@ -1,18 +1,5 @@
-
-export enum StatusTarefa {
-    Pendente = 'Pendente',
-    EmProgresso = 'Em Progresso',
-    Finalizado = 'Finalizado'
-}
-
-export enum DificuldadeTarefa {
-    Indefinido = 'Indefinido',
-    Facil = 'Facil',
-    Medio = 'Médio',
-    Dificil = 'Dificil'
-}
-
-
+import { StatusTarefa } from "./enum/EnumStatusTarefa";
+import { DificuldadeTarefa } from "./enum/EnumDificuldadeTarefa";
 export default class Tarefa {
 
     static #contadorId = 0
