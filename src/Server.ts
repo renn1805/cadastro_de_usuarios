@@ -1,25 +1,21 @@
-import { app } from "./App"
+import { app } from "./app"
 import * as z from "zod"
 
-//? Importação das classes usadas
 import User, * as U from "../src/User"
 import Task from "./Task"
 
-//? Iportação dos Enums usados
-import { StatusTask } from "./enum/EnumTaskState"
-import { DifficultTask } from "./enum/EnumTaskDifficult"
+import { TaskStatus } from "./enum/TaskStatus"
+import { TaskDifficulty } from "./enum/TaskDifficulty"
 
 
 const port = 3000
 app.listen(port, () => console.log("The server is running"))
 
-//? Método para pegar todas os usuarios
 app.get("/users", (req, res) => {
-    res.send(U.Users)
+    return res.status(200).send(U.Users)
 })
 
-//? Método para criar usuario
-app.post("/users/resgister-user", (req, res) => {
+app.post("/users", (req, res) => {
 
     const reqSchema = z.object(
         {
@@ -33,17 +29,17 @@ app.post("/users/resgister-user", (req, res) => {
 
     if (!request.success) {
         return res.status(400).json({
-            erro: "Invalid data",
+            error: "Invalid data",
             description: request.error
         })
     }
 
     const { name, email, password } = request.data
 
-    const isInUseEmail = U.Users.find(userAlreadyRegistered => userAlreadyRegistered.email === email) instanceof User
+    const isEmailAlreadyUsed = U.Users.find(user => user.email === email) instanceof User
 
-    if (isInUseEmail) {
-        return res.status(401).send("E-mail already in use")
+    if (isEmailAlreadyUsed) {
+        return res.status(400).send("E-mail already in use!")
     }
 
     const newUser = new User(
@@ -54,97 +50,95 @@ app.post("/users/resgister-user", (req, res) => {
 
     U.Users.push(newUser)
 
-    res.send("User successfully registered")
+    //? status 201 serve para mostrar que algo foi criado com sucesso
+    res.status(201)
 
 })
 
-//? Método para deletar usuarios
-app.post("/users/delete-user", (req, res) => {
+app.post("/users/delete", (req, res) => {
 
     const reqSchema = z.object({
-        emailWanted: z.email(),
-        passwordWanted: z.string()
+        email: z.email(),
+        password: z.string()
     })
 
     const request = reqSchema.safeParse(req.body)
 
     if (!request.success) {
         return res.status(400).json({
-            erro: "Invalid data",
+            error: "Invalid data",
             description: request.error
         })
     }
 
-    const { emailWanted, passwordWanted } = request.data
+    const { email, password } = request.data
 
-    const deletedUserIndex = U.Users.findIndex(user => user.email == emailWanted && user.comparePassword(passwordWanted))
+    const userIndex = U.Users.findIndex(user => user.email == email && user.comparePassword(password))
+    const wasUserFound = userIndex === -1
 
-
-    if (deletedUserIndex != -1) {
-
-        U.Users.splice(deletedUserIndex, 1)
-
-        res.status(200).send("User successfully deleted ")
-
-    } else {
-        res.status(400).send("Not found e-mail " + emailWanted)
+    if (wasUserFound) {
+        return res.status(404).send("Not found e-mail!")
     }
+
+    U.Users.splice(userIndex, 1)
+
+    //? status 204 mostra que a operação deu certo mas sem retorno, muito usado para operações de deletar
+    res.status(204).send("User successfully deleted!")
 
 })
 
+app.post("/users/task", (req, res) => {
 
-//? Método para criar uma tarefa
-app.post("/usuario/create-task", (req, res) => {
     const reqSchema = z.object({
         id: z.number().int(),
-        taskName: z.string().max(50),
-        taskDescription: z.string(),
-        taskState: z.union([z.literal(0), z.literal(1), z.literal(2)]),
-        taskDifficulty: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)])
+        title: z.string().max(50),
+        description: z.string(),
+        status: z.union([z.literal(0), z.literal(1), z.literal(2)]),
+        difficulty: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)])
     })
 
     const request = reqSchema.safeParse(req.body)
 
     if (!request.success) {
-        return res.json({
-            erro: "Invalid data!",
-            descricao: request.error
+        return res.status(400).json({
+            error: "Invalid data!",
+            description: request.error
         })
     }
 
-    const { id, taskName, taskDescription, taskState, taskDifficulty } = request.data
+    const { id, title, description, status, difficulty } = request.data
 
     const difficultyMap = {
-        0: DifficultTask.Undefined,
-        1: DifficultTask.Ease,
-        2: DifficultTask.Medium,
-        3: DifficultTask.Hard
+        0: TaskDifficulty.Undefined,
+        1: TaskDifficulty.Easy,
+        2: TaskDifficulty.Medium,
+        3: TaskDifficulty.Hard
     }
-    const taskDifficultyConverted = difficultyMap[taskDifficulty as keyof typeof difficultyMap] ?? DifficultTask.Undefined
+    const difficultyConverted = difficultyMap[difficulty as keyof typeof difficultyMap] ?? TaskDifficulty.Undefined
 
     const stateMap = {
-        0: StatusTask.Pending,
-        1: StatusTask.InProgress,
-        2: StatusTask.Finished
+        0: TaskStatus.Pending,
+        1: TaskStatus.InProgress,
+        2: TaskStatus.Finished
     }
-    const taskStateConverted = stateMap[taskState as keyof typeof stateMap] ?? StatusTask.Pending
-
+    const taskStateConverted = stateMap[status as keyof typeof stateMap] ?? TaskStatus.Pending
 
     const userWanted = U.Users.find(user => user.compareId(id))
+    const wasUserFound = userWanted !== undefined
 
-    if (userWanted !== undefined) {
+    if (wasUserFound) {
+
         userWanted.userTasks.push(new Task(
             userWanted.userTasks.length + 1,
-            taskName,
-            taskDescription,
+            title,
+            description,
             taskStateConverted,
-            taskDifficultyConverted
+            difficultyConverted
         ))
 
-        return res.send("Task added successfully")
+        return res.status(201)
 
     } else {
-        return res.send("Not found id!")
+        return res.status(404).send("Not found id!")
     }
-
 })

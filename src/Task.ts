@@ -1,5 +1,5 @@
-import { StatusTask } from "./enum/EnumTaskState";
-import { DifficultTask } from "./enum/EnumTaskDifficult";
+import { TaskStatus } from "./enum/TaskStatus";
+import { TaskDifficulty } from "./enum/TaskDifficulty";
 export default class Task {
 
     #taskId: number
@@ -14,19 +14,19 @@ export default class Task {
         return this.#taskDescription
     }
 
-    #taskState: StatusTask = StatusTask.Pending
+    #taskState: TaskStatus = TaskStatus.Pending
     get taskState() {
         return this.#taskState
     }
-    set changeTaskState(newState: StatusTask) {
+    set changeTaskState(newState: TaskStatus) {
         this.#taskState = newState
     }
 
-    #taskDifficulty: DifficultTask = DifficultTask.Undefined
+    #taskDifficulty: TaskDifficulty = TaskDifficulty.Undefined
     get taskDifficulty() {
         return this.#taskDifficulty
     }
-    set changeTaskDifficulty(newDifficulty: DifficultTask) {
+    set changeTaskDifficulty(newDifficulty: TaskDifficulty) {
         this.#taskDifficulty = newDifficulty
     }
 
@@ -36,8 +36,8 @@ export default class Task {
         id: number,
         name: string,
         description: string,
-        status: StatusTask,
-        difficulty: DifficultTask
+        status: TaskStatus,
+        difficulty: TaskDifficulty
     ) {
         this.#taskId = id
         this.#taskName = name

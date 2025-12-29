@@ -1,6 +1,6 @@
-export enum DifficultTask {
+export enum TaskDifficulty {
     Undefined = 'Undefined',
-    Ease = 'Ease',
+    Easy = 'Easy',
     Medium = 'Medium',
     Hard = 'Hard'
 }
