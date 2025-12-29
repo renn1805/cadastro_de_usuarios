@@ -2,43 +2,29 @@ import Task from "./Task";
 
 export default class User {
 
-    static #couterId = 1000
-
+    static #counterId = 1000
     #id: number
-    get id() {
-        return this.#id
-    }
-
-
     #name: string;
-    get name() {
-        return this.#name
-    }
-
     #email: string;
-    get email() {
-        return this.#email
-    }
-
     #password: string;
-
-    #userTasks: Task[] = []
-    get userTasks() {
-        return this.#userTasks
-    }
-
-
+    #tasks: Task[] = []
+    
+    
     constructor(name: string, email: string, password: string) {
-        User.#couterId++
-
-        this.#id = User.#couterId
+        User.#counterId++
+        
+        this.#id = User.#counterId
         this.#name = name.toLowerCase();
         this.#email = email.toLowerCase();
         this.#password = password
-
     };
+    
+    get id() {return this.#id}
+    get name() {return this.#name}
+    get email() {return this.#email}
+    get tasks() {return this.#tasks}
 
-    comparePassword(comparedPassword: string): Boolean {
+    matchesPassword(comparedPassword: string): boolean {
         if (this.#password === comparedPassword) {
             return true
         } else {
@@ -46,7 +32,7 @@ export default class User {
         }
     }
 
-    compareId(comparedId: number): boolean {
+    matchesId(comparedId: number): boolean {
         if (this.#id === comparedId) {
             return true
         } else {
@@ -54,7 +40,7 @@ export default class User {
         }
     }
 
-    compareEmail(comparedEmail: string): boolean {
+    matchesEmail(comparedEmail: string): boolean {
         if (this.#email === comparedEmail) {
             return true
         } else {
@@ -68,7 +54,7 @@ export default class User {
             id: this.#id,
             name: this.#name,
             email: this.#email,
-            tasks: this.#userTasks
+            tasks: this.#tasks
         }
     }
 

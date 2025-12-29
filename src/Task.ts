@@ -1,37 +1,13 @@
-import { TaskStatus } from "./enum/TaskStatus";
 import { TaskDifficulty } from "./enum/TaskDifficulty";
+import { TaskStatus } from "./enum/TaskStatus";
 export default class Task {
 
-    #taskId: number
-
-    #taskName: string;
-    get taskName() {
-        return this.#taskName
-    }
-
-    #taskDescription: string;
-    get taskDescription() {
-        return this.#taskDescription
-    }
-
-    #taskState: TaskStatus = TaskStatus.Pending
-    get taskState() {
-        return this.#taskState
-    }
-    set changeTaskState(newState: TaskStatus) {
-        this.#taskState = newState
-    }
-
-    #taskDifficulty: TaskDifficulty = TaskDifficulty.Undefined
-    get taskDifficulty() {
-        return this.#taskDifficulty
-    }
-    set changeTaskDifficulty(newDifficulty: TaskDifficulty) {
-        this.#taskDifficulty = newDifficulty
-    }
-
-
-
+    #id: number
+    #title: string;
+    #description: string;
+    #status: TaskStatus = TaskStatus.Pending
+    #difficulty: TaskDifficulty = TaskDifficulty.Undefined
+    
     constructor(
         id: number,
         name: string,
@@ -39,23 +15,30 @@ export default class Task {
         status: TaskStatus,
         difficulty: TaskDifficulty
     ) {
-        this.#taskId = id
-        this.#taskName = name
-        this.#taskDescription = description
-        this.#taskDifficulty = difficulty
-        this.#taskState = status
+        this.#id = id
+        this.#title = name
+        this.#description = description
+        this.#difficulty = difficulty
+        this.#status = status
     }
+    
+    get title() {return this.#title}
+    get description() {return this.#description}
 
+    get difficulty() {return this.#difficulty}
+    set difficulty(newDifficulty: TaskDifficulty) {this.#difficulty = newDifficulty}
 
+    get status() {return this.#status}
+    set status(newstatus: TaskStatus) {this.#status = newstatus}
+    
     toJSON() {
-
         return {
-            taskId: this.#taskId,
-            taskName: this.#taskName,
-            taskDescription: this.#taskDescription,
-            taskState: this.#taskState,
-            taskDifficulty: this.#taskDifficulty
+            id: this.#id,
+            title: this.#title,
+            description: this.#description,
+            status: this.#status,
+            difficulty: this.#difficulty
         }
     }
-
+    
 }

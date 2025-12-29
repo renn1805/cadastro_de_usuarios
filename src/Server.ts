@@ -73,7 +73,7 @@ app.post("/users/delete", (req, res) => {
 
     const { email, password } = request.data
 
-    const userIndex = U.Users.findIndex(user => user.email == email && user.comparePassword(password))
+    const userIndex = U.Users.findIndex(user => user.email == email && user.matchesPassword(password))
     const wasUserFound = userIndex === -1
 
     if (wasUserFound) {
@@ -123,13 +123,13 @@ app.post("/users/task", (req, res) => {
     }
     const taskStateConverted = stateMap[status as keyof typeof stateMap] ?? TaskStatus.Pending
 
-    const userWanted = U.Users.find(user => user.compareId(id))
+    const userWanted = U.Users.find(user => user.matchesId(id))
     const wasUserFound = userWanted !== undefined
 
     if (wasUserFound) {
 
-        userWanted.userTasks.push(new Task(
-            userWanted.userTasks.length + 1,
+        userWanted.tasks.push(new Task(
+            userWanted.tasks.length + 1,
             title,
             description,
             taskStateConverted,
