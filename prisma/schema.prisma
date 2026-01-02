@@ -9,3 +9,24 @@ generator client {
 datasource db {
   provider = "sqlite"
 }
+
+
+model Users{
+  id Int @id @default(autoincrement())
+  name String
+  email String
+  password String
+  tasks Tasks[]
+}
+
+model Tasks {
+  id Int @id @default(autoincrement())
+  title String
+  description String
+  status String
+  difficulty String
+
+  creatorId Int 
+
+  creator Users @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+}
